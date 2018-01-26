@@ -6,8 +6,24 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
+
+type Response struct {
+	Message string `json:"message"`
+}
+
+func Handler() (Response, error) {
+	result := hoge()
+	return Response{
+		Message: result,
+	}, nil
+}
+
+func main() {
+	lambda.Start(Handler)
+}
 
 type ChidleyRoot314159 struct {
 	Result *Result `xml:"result,omitempty" json:"result,omitempty"` // ZZmaxLength=0
@@ -70,8 +86,9 @@ type Version struct {
 	Text string `xml:",chardata" json:",omitempty"` // maxLength=3
 }
 
-func main() {
-	arg := os.Args[1]
+func hoge() string {
+	//arg := os.Args[1]
+	arg := "東京都渋谷区恵比寿南1-16-12 ＡＢＣ・ＭＡＭＩＥＳ　３Ｆ"
 	encodedAddress := url.QueryEscape(arg)
 	url := fmt.Sprintf("http://www.geocoding.jp/api/?q=%s", encodedAddress)
 
@@ -82,11 +99,10 @@ func main() {
 	err = xml.Unmarshal([]byte(body), &result)
 	if err != nil {
 		fmt.Printf("error: %v", err)
-		return
+		return ""
 	}
 
-	fmt.Printf("Lat: %s, Lng: %s\n", result.Coordinate.Lat.Text, result.Coordinate.Lng.Text)
-
+	return fmt.Sprintf("Lat: %s, Lng: %s\n", result.Coordinate.Lat.Text, result.Coordinate.Lng.Text)
 }
 
 func httpGet(url string) (string, error) {
