@@ -1,24 +1,39 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 type Response struct {
-	Message string `json:"message"`
+	Address string `json:address`
+	Lat     string `json:lat`
+	Lng     string `json:lag`
 }
 
-func Handler() (Response, error) {
+func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Println("Received body: ", request.Body)
+
 	result := hoge()
-	return Response{
-		Message: result,
-	}, nil
+	res := Response{
+		Address: result.Address.Text,
+		Lat:     result.Coordinate.Lat.Text,
+		Lng:     result.Coordinate.Lng.Text,
+	}
+	jsonBytes, err := json.Marshal(res)
+	if err != nil {
+		fmt.Println("JSON Marshal error:", err)
+		return events.APIGatewayProxyResponse{Body: `{"message": "JSON Marshal error"}`, StatusCode: 500}, err
+	}
+
+	return events.APIGatewayProxyResponse{Body: string(jsonBytes), StatusCode: 200}, nil
 }
 
 func main() {
@@ -86,7 +101,7 @@ type Version struct {
 	Text string `xml:",chardata" json:",omitempty"` // maxLength=3
 }
 
-func hoge() string {
+func hoge() Result {
 	//arg := os.Args[1]
 	arg := "東京都渋谷区恵比寿南1-16-12 ＡＢＣ・ＭＡＭＩＥＳ　３Ｆ"
 	encodedAddress := url.QueryEscape(arg)
@@ -99,10 +114,10 @@ func hoge() string {
 	err = xml.Unmarshal([]byte(body), &result)
 	if err != nil {
 		fmt.Printf("error: %v", err)
-		return ""
+		return result
 	}
 
-	return fmt.Sprintf("Lat: %s, Lng: %s\n", result.Coordinate.Lat.Text, result.Coordinate.Lng.Text)
+	return result
 }
 
 func httpGet(url string) (string, error) {
