@@ -57,7 +57,7 @@ functions:
     events:
       - http:
           path: restaurant-coordinate
-          method: get
+          method: post
           cors: true    
 
 #    The following are a few example events you can configure
