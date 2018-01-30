@@ -12,7 +12,7 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func PutItem() {
+func PutItem(tabelogResult TabelogResult, geocoordResult GeocoordResult) {
 
 	// session
 	sess, err := session.NewSession()
@@ -35,22 +35,22 @@ func PutItem() {
 				N: aws.String(createdAt),
 			},
 			"name": {
-				S: aws.String("中国茶房8 恵比寿店 （チャイニーズカフェ・エイト）"),
+				S: aws.String(tabelogResult.Name),
 			},
 			"address": {
-				S: aws.String("東京都渋谷区恵比寿南1-16-12 ＡＢＣ・ＭＡＭＩＥＳ　３Ｆ"),
+				S: aws.String(tabelogResult.Address),
 			},
 			"genre": {
 				S: aws.String("中華料理 飲茶・点心 居酒屋"),
 			},
 			"url": {
-				S: aws.String("https://tabelog.com/tokyo/A1303/A130302/13020992/dtlmenu/lunch/"),
+				S: aws.String(tabelogResult.URL),
 			},
 			"lat": {
-				N: aws.String("35.644536"),
+				N: aws.String(geocoordResult.Coordinate.Lat.Text),
 			},
 			"lng": {
-				N: aws.String("139.709527"),
+				N: aws.String(geocoordResult.Coordinate.Lng.Text),
 			},
 		},
 	}
