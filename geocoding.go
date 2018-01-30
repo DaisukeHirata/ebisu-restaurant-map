@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 )
 
@@ -73,24 +71,14 @@ func GetCoordinateFromAddress(address string) GeocoordResult {
 	encodedAddress := url.QueryEscape(address)
 	url := fmt.Sprintf("http://www.geocoding.jp/api/?q=%s", encodedAddress)
 
-	body, err := httpGet(url)
+	body, err := HttpGet(url)
 
 	result := GeocoordResult{}
-	err = xml.Unmarshal([]byte(body), &result)
+	err = xml.Unmarshal(body, &result)
 	if err != nil {
 		fmt.Printf("error: %v", err)
 		return result
 	}
 
 	return result
-}
-
-func httpGet(url string) (string, error) {
-	response, _ := http.Get(url)
-	body, err := ioutil.ReadAll(response.Body)
-	defer response.Body.Close()
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
 }

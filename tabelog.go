@@ -1,15 +1,52 @@
 package main
 
+import (
+	"bytes"
+	"strings"
+
+	xmlpath "gopkg.in/xmlpath.v2"
+	"mvdan.cc/xurls"
+)
+
 type TabelogResult struct {
 	Address string
 	URL     string
 	Name    string
 }
 
-func GetAddressFromTabelogURL(url string) TabelogResult {
+func RegexTabelogURL(post string) string {
+	URL := xurls.Relaxed().FindString(post)
+	return URL
+}
+
+func GetAddressFromTabelogURL(URL string) TabelogResult {
+	body, _ := HttpGet(URL)
+
+	address := xpath(body, `//*[@id="contents-rstdata"]/div[2]/table[1]/tbody/tr[5]/td/p`)
+	name := xpath(body, `//*[@id="rstdtl-head"]/div[1]/div[1]/div[1]/div[1]/div/h2/a/span`)
+
 	return TabelogResult{
-		Address: "東京都渋谷区恵比寿南1-16-12 ＡＢＣ・ＭＡＭＩＥＳ　３Ｆ",
-		URL:     url,
-		Name:    "レストラン名",
+		Address: address,
+		URL:     URL,
+		Name:    name,
 	}
+}
+
+func xpath(body []byte, xpath string) string {
+	var val string
+
+	path := xmlpath.MustCompile(xpath)
+	root, err := xmlpath.ParseHTML(bytes.NewReader(body))
+	if err != nil {
+		return val
+	}
+
+	iter := path.Iter(root)
+	for iter.Next() {
+		n := iter.Node()
+		val = n.String()
+		val = strings.TrimSpace(val)
+	}
+
+	return val
 }
