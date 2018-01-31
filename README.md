@@ -14,7 +14,7 @@ serverless create -u https://github.com/serverless/serverless-golang/ -p myservi
 
 ```
 cd myservice
-GOOS=linux go build -o bin/main
+make
 ```
 
 3. Deploy!
