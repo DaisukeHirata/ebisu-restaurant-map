@@ -2,21 +2,24 @@ package utils
 
 import (
 	"fmt"
-	"strconv"
 
 	geojson "github.com/paulmach/go.geojson"
 )
 
-func MarchallingToGeoJson(tabelogResult TabelogResult, geoCoordResult GeocoordResult) (string, error) {
+func MarchallingToGeoJson(restaurants []Restaurant) (string, error) {
 	fc := geojson.NewFeatureCollection()
 
-	lat, _ := strconv.ParseFloat(geoCoordResult.Coordinate.Lat.Text, 64)
-	lng, _ := strconv.ParseFloat(geoCoordResult.Coordinate.Lng.Text, 64)
-	f := geojson.NewPointFeature([]float64{lat, lng})
-	f.SetProperty("name", tabelogResult.Name)
-	f.SetProperty("url", tabelogResult.URL)
-	f.SetProperty("address", tabelogResult.Address)
-	fc.AddFeature(f)
+	for _, restaurant := range restaurants {
+		lat := restaurant.Lat
+		lng := restaurant.Lng
+		f := geojson.NewPointFeature([]float64{lat, lng})
+		f.SetProperty("name", restaurant.Name)
+		f.SetProperty("genre", restaurant.Genre)
+		f.SetProperty("message", restaurant.Message)
+		f.SetProperty("url", restaurant.URL)
+		f.SetProperty("address", restaurant.Address)
+		fc.AddFeature(f)
+	}
 
 	rawJSON, err := fc.MarshalJSON()
 
