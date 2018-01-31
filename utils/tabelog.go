@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ type TabelogResult struct {
 	Address string
 	URL     string
 	Name    string
+	Genre   string
 }
 
 func RegexTabelogURL(post string) string {
@@ -24,16 +25,18 @@ func GetAddressFromTabelogURL(URL string) TabelogResult {
 
 	address := xpath(body, `//*[@id="contents-rstdata"]/div[2]/table[1]/tbody/tr[5]/td/p`)
 	name := xpath(body, `//*[@id="rstdtl-head"]/div[1]/div[1]/div[1]/div[1]/div/h2/a/span`)
+	genre := xpath(body, `//*[@id="contents-rstdata"]/div[2]/table[1]/tbody/tr[2]/td/span`)
 
 	return TabelogResult{
 		Address: address,
 		URL:     URL,
 		Name:    name,
+		Genre:   genre,
 	}
 }
 
 func xpath(body []byte, xpath string) string {
-	var val string
+	var val = "<No Data>"
 
 	path := xmlpath.MustCompile(xpath)
 	root, err := xmlpath.ParseHTML(bytes.NewReader(body))

@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func PutItem(tabelogResult TabelogResult, geocoordResult GeocoordResult) {
 				S: aws.String(tabelogResult.Address),
 			},
 			"genre": {
-				S: aws.String("中華料理 飲茶・点心 居酒屋"),
+				S: aws.String(tabelogResult.Genre),
 			},
 			"url": {
 				S: aws.String(tabelogResult.URL),

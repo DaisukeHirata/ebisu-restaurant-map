@@ -3,22 +3,13 @@ package main
 import (
 	"fmt"
 
+	"github.com/DaisukeHirata/ebisu-restaurant-map/utils"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Println("Received body: ", request.Body)
-
-	geoJSON, err := proc(request.Body)
-
-	if err != nil {
-		return events.APIGatewayProxyResponse{Body: `{"message": "JSON Marshal error"}`, StatusCode: 500}, err
-	}
-
-	fmt.Println("GeoJSON: ", geoJSON)
-
-	return events.APIGatewayProxyResponse{Body: geoJSON, StatusCode: 200}, nil
+	return events.APIGatewayProxyResponse{Body: "hogehoge", StatusCode: 200}, nil
 }
 
 func main() {
@@ -35,10 +26,10 @@ func localDebug() {
 }
 
 func proc(post string) (string, error) {
-	decodedPost := Unescape(post)
-	URL := RegexTabelogURL(decodedPost)
-	tabelogResult := GetAddressFromTabelogURL(URL)
-	geoCoordResult := GetCoordinateFromAddress(tabelogResult.Address)
-	PutItem(tabelogResult, geoCoordResult)
-	return MarchallingToGeoJson(tabelogResult, geoCoordResult)
+	decodedPost := utils.Unescape(post)
+	URL := utils.RegexTabelogURL(decodedPost)
+	tabelogResult := utils.GetAddressFromTabelogURL(URL)
+	geoCoordResult := utils.GetCoordinateFromAddress(tabelogResult.Address)
+	utils.PutItem(tabelogResult, geoCoordResult)
+	return utils.MarchallingToGeoJson(tabelogResult, geoCoordResult)
 }

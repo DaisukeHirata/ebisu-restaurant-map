@@ -65,13 +65,20 @@ package:
    - ./bin/**
 
 functions:
-  hello:
-    handler: bin/main
+  postFromSlack:
+    handler: bin/create
     events:
       - http:
           path: restaurant-coordinate
           method: post
-          cors: true    
+          cors: true
+  getCoordinate:
+    handler: bin/get
+    events:
+      - http:
+          path: restaurant-map
+          method: get
+          cors: true              
 
 resources:
   Resources:
